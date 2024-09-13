@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Asientos de Avión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        economy: '#e0f7fa',
+                        business: '#fff9c4',
+                        firstClass: '#ffccbc',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .seat.occupied {
+            background-color: #ef9a9a !important;
+            cursor: not-allowed !important;
+        }
+        .seat.selected {
+            border: 2px solid #2196f3;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Reserva de Asientos de Avión</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="airplane-container overflow-x-auto">
+                <div class="inline-flex flex-col items-center mb-8">
+                    <div class="w-48 h-12 bg-gray-400 rounded-t-full mb-4"></div>
+                    {{ seats | safe }}
+                </div>
+            </div>
+            <div id="selection" class="mt-8">
+                <h2 class="text-xl font-semibold mb-2">Asiento seleccionado: <span id="selected-seat" class="font-normal">Ninguno</span></h2>
+                <h3 class="text-lg mb-4">Precio: $<span id="seat-price" class="font-semibold">0</span></h3>
+                <button id="reserve-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Reservar Asiento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedSeat = null;
+
+            document.querySelectorAll('.seat').forEach(seat => {
+                seat.addEventListener('click', function() {
+                    if (this.classList.contains('occupied')) {
+                        return;
+                    }
+                    if (selectedSeat) {
+                        selectedSeat.classList.remove('selected');
+                    }
+                    selectedSeat = this;
+                    this.classList.add('selected');
+                    document.getElementById('selected-seat').textContent = this.dataset.seatId;
+                    document.getElementById('seat-price').textContent = this.dataset.price;
+                });
+            });
+
+            document.getElementById('reserve-button').addEventListener('click',
