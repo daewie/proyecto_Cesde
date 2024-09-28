@@ -1,0 +1,8 @@
+.seat.occupied {
+    background-color: #ef9a9a !important;
+    cursor: not-allowed !important;
+}
+
+.seat.selected {
+    border: 2px solid #2196f3;
+}
