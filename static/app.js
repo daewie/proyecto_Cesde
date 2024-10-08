@@ -48,14 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    data.reserved_seats.forEach(seatId => {
-                        const seatElement = document.getElementById(seatId);
-                        seatElement.classList.add('occupied');
-                        seatElement.classList.remove('selected');
-                    });
-                    selectedSeats.clear();
-                    updateSelection();
-                    alert(`Asientos reservados con éxito. Precio total: $${data.total_price}`);
+                    // Redirigir a la página de pago
+                    window.location.href = '/payment';
                 } else {
                     alert(data.message);
                 }

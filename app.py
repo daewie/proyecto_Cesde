@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+import secrets
 
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(16)
 
 # Definimos la estructura del avión y los precios
 airplane = {
@@ -24,20 +26,23 @@ def index():
 
 @app.route('/reservation')
 def reservation():
+    seats_html = generate_seats_html()
+    return render_template('reservation.html', seats=seats_html)
+
+def generate_seats_html():
     seats_html = "<div class='airplane'>"
     seats_html += "<div class='second-floor mb-12'><h2 class='text-2xl font-bold mb-4 text-center'>Second Floor</h2>"
     for class_type, config in airplane.items():
         if class_type == 'second_floor':
-            seats_html += generate_seats_html(class_type, config)
+            seats_html += generate_class_seats_html(class_type, config)
     seats_html += "</div><div class='first-floor'>"
     for class_type, config in airplane.items():
         if class_type != 'second_floor':
-            seats_html += generate_seats_html(class_type, config)
+            seats_html += generate_class_seats_html(class_type, config)
     seats_html += "</div></div>"
-    
-    return render_template('reservation.html', seats=seats_html)
+    return seats_html
 
-def generate_seats_html(class_type, config):
+def generate_class_seats_html(class_type, config):
     html = f'<div class="mb-8"><h2 class="text-xl font-semibold mb-2 text-center">{class_type.replace("_", " ").title()}</h2>'
     for row in range(1, config['rows'] + 1):
         html += '<div class="flex justify-center mb-2">'
@@ -79,12 +84,32 @@ def reserve_seat():
         total_price += seats[seat_id]['price']
         reserved_seats.append(seat_id)
     
+    # Guardar la información de la reserva en la sesión
+    session['reserved_seats'] = reserved_seats
+    session['total_price'] = total_price
+    
     return jsonify({
         'success': True,
         'message': 'Asientos reservados con éxito',
         'reserved_seats': reserved_seats,
         'total_price': total_price
     })
+
+@app.route('/payment')
+def payment():
+    reserved_seats = session.get('reserved_seats', [])
+    total_price = session.get('total_price', 0)
+    if not reserved_seats:
+        return redirect(url_for('reservation'))
+    return render_template('payment.html', reserved_seats=reserved_seats, total_price=total_price)
+
+@app.route('/process_payment', methods=['POST'])
+def process_payment():
+    # Aquí iría la lógica para procesar el pago
+    # Por ahora, solo simularemos un pago exitoso
+    session.pop('reserved_seats', None)
+    session.pop('total_price', None)
+    return jsonify({'success': True, 'message': 'Pago procesado con éxito'})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

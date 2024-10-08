@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago de Reserva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Pago de Reserva</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+            <h2 class="text-xl font-semibold mb-4">Resumen de la reserva</h2>
+            <p class="mb-2">Asientos seleccionados: {{ reserved_seats|join(', ') }}</p>
+            <p class="mb-4">Total a pagar: ${{ total_price }}</p>
+            
+            <form id="payment-form" class="space-y-4">
+                <div>
+                    <label for="card-number" class="block text-sm font-medium text-gray-700">Número de tarjeta</label>
+                    <input type="text" id="card-number" name="card-number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <label for="card-name" class="block text-sm font-medium text-gray-700">Nombre en la tarjeta</label>
+                    <input type="text" id="card-name" name="card-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <label for="expiry-date" class="block text-sm font-medium text-gray-700">Fecha de expiración</label>
+                        <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                    <div class="flex-1">
+                        <label for="cvv" class="block text-sm font-medium text-gray-700">CVV</label>
+                        <input type="text" id="cvv" name="cvv" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Pagar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/process_payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cardNumber: document.getElementById('card-number').value,
+                    cardName: document.getElementById('card-name').value,
+                    expiryDate: document.getElementById('expiry-date').value,
+                    cvv: document.getElementById('cvv').value
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Pago procesado con éxito. Su reserva está confirmada.');
+                    window.location.href = '/';
+                } else {
+                    alert('Error al procesar el pago: ' + data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Ha ocurrido un error al procesar el pago.');
+            });
+        });
+    </script>
+</body>
+</html>
