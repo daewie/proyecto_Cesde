@@ -6,13 +6,40 @@
     <title>Reserva de Asientos de Avión - Bienvenido</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="text-center">
-        <h1 class="text-4xl font-bold mb-8 text-gray-800">Bienvenido a la Reserva de Asientos de Avión</h1>
-        <p class="text-xl mb-8 text-gray-600">Haga clic en el botón de abajo para comenzar su reserva</p>
-        <a href="/reservation" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded text-xl transition duration-300">
-            Reservar Asientos
-        </a>
-    </div>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Reserva de Asientos de Avión</h1>
+            <nav>
+                {% if user %}
+                    <span class="mr-4">Bienvenido, {{ user }}!</span>
+                    <a href="{{ url_for('logout') }}" class="text-blue-500 hover:text-blue-700">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="text-blue-500 hover:text-blue-700 mr-4">Iniciar Sesión</a>
+                    <a href="{{ url_for('register') }}" class="text-blue-500 hover:text-blue-700">Registrarse</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow flex items-center justify-center">
+        <div class="text-center">
+            <h2 class="text-4xl font-bold mb-8 text-gray-800">Bienvenido a la Reserva de Asientos de Avión</h2>
+            <p class="text-xl mb-8 text-gray-600">Haga clic en el botón de abajo para comenzar su reserva</p>
+            <a href="{{ url_for('select_destination') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded text-xl transition duration-300">
+                Seleccionar Destino
+            </a>
+        </div>
+    </main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed bottom-4 right-4">
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

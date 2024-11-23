@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Reservas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Análisis de Reservas</h1>
+            <nav>
+                {% if user %}
+                    <span class="mr-4">Bienvenido, {{ user }}!</span>
+                    <a href="{{ url_for('logout') }}" class="text-blue-500 hover:text-blue-700">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="text-blue-500 hover:text-blue-700 mr-4">Iniciar Sesión</a>
+                    <a href="{{ url_for('register') }}" class="text-blue-500 hover:text-blue-700">Registrarse</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Resumen de Ingresos -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Resumen de Ingresos</h2>
+                <p class="text-3xl font-bold text-green-600">${{ analytics.total_revenue }}</p>
+                <p class="text-gray-600">Ingresos Totales</p>
+            </div>
+
+            <!-- Distribución de Asientos -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Distribución de Asientos</h2>
+                <canvas id="seatsChart"></canvas>
+            </div>
+
+            <!-- Ingresos Diarios -->
+            <div class="bg-white p-6 rounded-lg shadow-lg col-span-1 md:col-span-2">
+                <h2 class="text-xl font-bold mb-4">Ingresos Diarios</h2>
+                <canvas id="revenueChart"></canvas>
+            </div>
+
+            <!-- Ingresos por Clase -->
+            <div class="bg-white p-6 rounded-lg shadow-lg col-span-1 md:col-span-2">
+                <h2 class="text-xl font-bold mb-4">Ingresos por Clase</h2>
+                <canvas id="classRevenueChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuración de gráficos
+        const seatsData = {{ analytics.seats_by_class | tojson }};
+        const dailyRevenue = {{ analytics.daily_revenue | tojson }};
+        const classRevenue = {{ analytics.class_revenue | tojson }};
+
+        // Gráfico de distribución de asientos
+        new Chart(document.getElementById('seatsChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Economía', 'Negocios', 'Primera Clase', 'Segunda Planta'],
+                datasets: [{
+                    data: [
+                        seatsData.economy,
+                        seatsData.business,
+                        seatsData.first_class,
+                        seatsData.second_floor
+                    ],
+                    backgroundColor: [
+                        '#e0f7fa',
+                        '#fff9c4',
+                        '#ffccbc',
+                        '#c8e6c9'
+                    ]
+                }]
+            }
+        });
+
+        // Gráfico de ingresos diarios
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: dailyRevenue.map(d => d.date),
+                datasets: [{
+                    label: 'Ingresos Diarios',
+                    data: dailyRevenue.map(d => d.total_price),
+                    borderColor: '#2196f3',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Gráfico de ingresos por clase
+        new Chart(document.getElementById('classRevenueChart'), {
+            type: 'bar',
+            data: {
+                labels: classRevenue.map(c => c.class),
+                datasets: [{
+                    label: 'Ingresos por Clase',
+                    data: classRevenue.map(c => c.revenue),
+                    backgroundColor: [
+                        '#e0f7fa',
+                        '#fff9c4',
+                        '#ffccbc',
+                        '#c8e6c9'
+                    ]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

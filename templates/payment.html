@@ -16,22 +16,66 @@
             
             <form id="payment-form" class="space-y-4">
                 <div>
-                    <label for="card-number" class="block text-sm font-medium text-gray-700">Número de tarjeta</label>
-                    <input type="text" id="card-number" name="card-number" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <label for="card-type" class="block text-sm font-medium text-gray-700">Tipo de tarjeta</label>
+                    <select id="card-type" name="card-type" 
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                        required>
+                        <option value="" disabled selected>Seleccione una tarjeta</option>
+                        <option value="Visa">Visa</option>
+                        <option value="Mastercard">Mastercard</option>
+                        <option value="Amex">American Express</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="card-name" class="block text-sm font-medium text-gray-700">Nombre en la tarjeta</label>
-                    <input type="text" id="card-name" name="card-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <label for="card-number" class="block text-sm font-medium text-gray-700">Número de tarjeta</label>
+                    <input type="text" id="card-number" name="card-number" 
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                        maxlength="19" 
+                        placeholder="1234 5678 1234 5678" 
+                        required>
                 </div>
                 <div class="flex space-x-4">
                     <div class="flex-1">
-                        <label for="expiry-date" class="block text-sm font-medium text-gray-700">Fecha de expiración</label>
-                        <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <label for="expiry-month" class="block text-sm font-medium text-gray-700">Fecha de expiración</label>
+                        <select id="expiry-month" name="expiry-month" 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                            required>
+                            <option value="" disabled selected>Mes</option>
+                            <option value="01">01 - Enero</option>
+                            <option value="02">02 - Febrero</option>
+                            <option value="03">03 - Marzo</option>
+                            <option value="04">04 - Abril</option>
+                            <option value="05">05 - Mayo</option>
+                            <option value="06">06 - Junio</option>
+                            <option value="07">07 - Julio</option>
+                            <option value="08">08 - Agosto</option>
+                            <option value="09">09 - Septiembre</option>
+                            <option value="10">10 - Octubre</option>
+                            <option value="11">11 - Noviembre</option>
+                            <option value="12">12 - Diciembre</option>
+                        </select>
                     </div>
                     <div class="flex-1">
-                        <label for="cvv" class="block text-sm font-medium text-gray-700">CVV</label>
-                        <input type="text" id="cvv" name="cvv" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                        <select id="expiry-year" name="expiry-year" 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                            required>
+                            <option value="" disabled selected>Año</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
                     </div>
+                </div>
+                <div class="flex-1">
+                    <label for="cvv" class="block text-sm font-medium text-gray-700">CVV</label>
+                    <input type="text" id="cvv" name="cvv" 
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                        maxlength="4" 
+                        pattern="\d{3,4}" 
+                        placeholder="123" 
+                        required>
                 </div>
                 <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Pagar
@@ -41,19 +85,50 @@
     </div>
 
     <script>
+        const cardNumberInput = document.getElementById('card-number');
+        const cardTypeSelect = document.getElementById('card-type');
+
+        // Formato dinámico según el tipo de tarjeta
+        cardTypeSelect.addEventListener('change', function () {
+            const cardType = cardTypeSelect.value;
+            if (cardType === 'Visa' || cardType === 'Mastercard') {
+                cardNumberInput.setAttribute('maxlength', '19');
+                cardNumberInput.setAttribute('pattern', '\\d{4} \\d{4} \\d{4} \\d{4}');
+                cardNumberInput.placeholder = '1234 5678 1234 5678';
+            } else if (cardType === 'Amex') {
+                cardNumberInput.setAttribute('maxlength', '17');
+                cardNumberInput.setAttribute('pattern', '\\d{4} \\d{6} \\d{5}');
+                cardNumberInput.placeholder = '1234 567890 12345';
+            }
+        });
+
+        // Formateo del número de tarjeta mientras se escribe
+        cardNumberInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            const cardType = cardTypeSelect.value;
+
+            if (cardType === 'Visa' || cardType === 'Mastercard') {
+                value = value.substring(0, 16);
+                e.target.value = value.match(/.{1,4}/g)?.join(' ') || '';
+            } else if (cardType === 'Amex') {
+                value = value.substring(0, 15);
+                e.target.value = value.replace(/^(\d{1,4})(\d{1,6})?(\d{1,5})?$/, (_, g1, g2, g3) =>
+                    [g1, g2, g3].filter(Boolean).join(' ')
+                );
+            }
+        });
+
         document.getElementById('payment-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            const cardNumber = document.getElementById('card-number').value.replace(/\s+/g, '');
+            const expiryMonth = document.getElementById('expiry-month').value;
+            const expiryYear = document.getElementById('expiry-year').value;
+            const cvv = document.getElementById('cvv').value;
+
             fetch('/process_payment', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    cardNumber: document.getElementById('card-number').value,
-                    cardName: document.getElementById('card-name').value,
-                    expiryDate: document.getElementById('expiry-date').value,
-                    cvv: document.getElementById('cvv').value
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cardNumber, expiryMonth, expiryYear, cvv })
             })
             .then(response => response.json())
             .then(data => {
@@ -64,7 +139,7 @@
                     alert('Error al procesar el pago: ' + data.message);
                 }
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error('Error:', error);
                 alert('Ha ocurrido un error al procesar el pago.');
             });

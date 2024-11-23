@@ -21,26 +21,77 @@
         }
     </script>
 </head>
+<header class="bg-white shadow-md py-4">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Reserva de Asientos de Avión</h1>
+        <nav>
+            {% if user %}
+                <span class="mr-4">Bienvenido, {{ user }}!</span>
+                <a href="{{ url_for('logout') }}" class="text-blue-500 hover:text-blue-700">Cerrar Sesión</a>
+                <a href="{{ url_for('analytics') }}" class="text-blue-500 hover:text-blue-700 mr-4">Ver Análisis</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="text-blue-500 hover:text-blue-700 mr-4">Iniciar Sesión</a>
+                <a href="{{ url_for('register') }}" class="text-blue-500 hover:text-blue-700">Registrarse</a>  
+            {% endif %}
+        </nav>
+    </div>
+</header>
 <body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Reserva de Asientos de Avión</h1>
+    <main class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Selección de Asientos</h2>
+        <div id="destination-info" class="text-center text-xl font-semibold mb-6"></div>
         <div class="bg-white p-6 rounded-lg shadow-lg">
-            <div class="airplane-container overflow-x-auto">
-                <div class="inline-flex flex-col items-center mb-8">
-                    <div class="w-48 h-12 bg-gray-400 rounded-t-full mb-4"></div>
-                    {{ seats | safe }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="airplane-container">
+                    <div class="inline-flex flex-col items-center mb-8">
+                        <div class="w-48 h-12 bg-gray-400 rounded-t-full mb-4"></div>
+                        {{ seats | safe }}
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2">Leyenda</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-economy mr-2 border-2 border-gray-300"></div>
+                                <span>Economía</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-business mr-2 border-2 border-gray-300"></div>
+                                <span>Negocios</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-firstClass mr-2 border-2 border-gray-300"></div>
+                                <span>Primera Clase</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-secondFloor mr-2 border-2 border-gray-300"></div>
+                                <span>Segunda Planta</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-red-500 mr-2"></div>
+                                <span>Ocupado</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-green-500 mr-2"></div>
+                                <span>Seleccionado</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="selection" class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-2">Tu Selección</h3>
+                        <p class="mb-2">Asientos seleccionados: <span id="selected-seats" class="font-semibold">Ninguno</span></p>
+                        <p class="mb-4">Precio total: $<span id="total-price" class="font-semibold">0</span></p>
+                        <button id="reserve-button" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Reservar Asientos
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div id="selection" class="mt-8">
-                <h2 class="text-xl font-semibold mb-2">Asientos seleccionados: <span id="selected-seats" class="font-normal">Ninguno</span></h2>
-                <h3 class="text-lg mb-4">Precio total: $<span id="total-price" class="font-semibold">0</span></h3>
-                <button id="reserve-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    Reservar Asientos
-                </button>
-            </div>
         </div>
-    </div>
+    </main>
 
     <script src="{{ url_for('static', filename='app.js') }}"></script>
+    
 </body>
 </html>
