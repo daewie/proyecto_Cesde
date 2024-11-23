@@ -54,12 +54,10 @@
     </main>
 
     <script>
-        // Configuración de gráficos
         const seatsData = {{ analytics.seats_by_class | tojson }};
         const dailyRevenue = {{ analytics.daily_revenue | tojson }};
         const classRevenue = {{ analytics.class_revenue | tojson }};
 
-        // Gráfico de distribución de asientos
         new Chart(document.getElementById('seatsChart'), {
             type: 'pie',
             data: {
@@ -81,7 +79,6 @@
             }
         });
 
-        // Gráfico de ingresos diarios
         new Chart(document.getElementById('revenueChart'), {
             type: 'line',
             data: {
@@ -102,7 +99,7 @@
             }
         });
 
-        // Gráfico de ingresos por clase
+
         new Chart(document.getElementById('classRevenueChart'), {
             type: 'bar',
             data: {

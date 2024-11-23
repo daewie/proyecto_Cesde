@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Redirigir a la página de pago
                     window.location.href = '/payment';
                 } else {
                     alert(data.message);

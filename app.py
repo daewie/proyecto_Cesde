@@ -7,11 +7,9 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-# In-memory storage
 users = {}
 reservations_data = []
 
-# Configuración del avión
 airplane = {
     'second_floor': {'rows': 2, 'seats_per_row': 4, 'price': 750_000},  
     'first_class': {'rows': 2, 'seats_per_row': 4, 'price': 500_000},   
@@ -19,8 +17,6 @@ airplane = {
     'economy': {'rows': 10, 'seats_per_row': 6, 'price': 100_000},     
 }
 
-
-# Initialize seats
 seats = {}
 for class_type, config in airplane.items():
     for row in range(1, config['rows'] + 1):
@@ -38,10 +34,8 @@ def get_analytics_data():
             'class_revenue': []
         }
     
-    # Total revenue
     total_revenue = df['total_price'].sum()
     
-    # Seats by class
     seats_by_class = {
         'economy': len([s for s in df['seats'].explode() if s.startswith('E')]),
         'business': len([s for s in df['seats'].explode() if s.startswith('B')]),
@@ -49,12 +43,10 @@ def get_analytics_data():
         'second_floor': len([s for s in df['seats'].explode() if s.startswith('S')])
     }
     
-    # Daily revenue
     df['date'] = pd.to_datetime(df['timestamp']).dt.date
     daily_revenue = df.groupby('date')['total_price'].sum().reset_index()
     daily_revenue['date'] = daily_revenue['date'].astype(str)
     
-    # Revenue by class
     class_revenue = []
     for class_type in ['economy', 'business', 'first_class', 'second_floor']:
         class_seats = [s for s in df['seats'].explode() if s.startswith(class_type[0].upper())]
@@ -175,7 +167,6 @@ def reserve_seat():
         total_price += seats[seat_id]['price']
         reserved_seats.append(seat_id)
     
-    # Store reservation data for analytics
     reservations_data.append({
         'user': session['user'],
         'seats': reserved_seats,

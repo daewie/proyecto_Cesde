@@ -54,7 +54,6 @@
             selectedDestination.textContent = `Destino seleccionado: ${e.latlng.lat.toFixed(2)}, ${e.latlng.lng.toFixed(2)}`;
             continueButton.disabled = false;
 
-            // Store the selected destination in session storage
             sessionStorage.setItem('selectedDestination', JSON.stringify({
                 lat: e.latlng.lat,
                 lng: e.latlng.lng
